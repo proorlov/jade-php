@@ -594,7 +594,7 @@ class Compiler
             return isset($anything[$key]) ? $anything[$key] : null;
         }
         if(is_object($anything)) {
-            return isset($anything->$key) ? $anything->$key : (isset($anything[$key]) ? $anything[$key] : null);
+            return isset($anything->$key) ? $anything->$key : null;
         }
         return null;
     }
@@ -661,15 +661,7 @@ class Compiler
             }
 
             if (preg_match('/^([\'"]).*?\1/', $arg, $match)) {
-                try
-                {
-                    $code = $this->handleString(trim($arg));
-                }
-                catch(\Exception $e)
-                {
-                    var_dump($arg);
-                    exit;
-                }
+                $code = $this->handleString(trim($arg));
             } else {
                 try
                 {
@@ -677,6 +669,7 @@ class Compiler
                 }
                 catch(\Exception $e)
                 {
+                    // if a bug occur, try to remove comments
                     try
                     {
                         $code = $this->handleCode(preg_replace('#/\*(.*)\*/#', '', $arg));
@@ -1205,7 +1198,7 @@ class Compiler
     {
         $items = array();
         $classes = array();
-        
+
         foreach ($attributes as $attr) {
             $key = trim($attr['name']);
             $value = trim($attr['value']);

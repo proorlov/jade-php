@@ -111,11 +111,12 @@ class Compiler
      * @param bool  $prettyprint
      * @param array $filters
      */
-    public function __construct($prettyprint = false, $phpSingleLine = fase, $allowMixinOverride = false, array $filters = array())
+    public function __construct($prettyprint = false, $phpSingleLine = fase, $allowMixinOverride = false, $singleQuote = true, array $filters = array())
     {
         $this->prettyprint = $prettyprint;
         $this->phpSingleLine = $phpSingleLine;
         $this->allowMixinOverride = $allowMixinOverride;
+        $this->singleQuote = $singleQuote;
         $this->filters = $filters;
     }
 
@@ -1198,6 +1199,11 @@ class Compiler
     {
         $items = array();
         $classes = array();
+        if ($this->singleQuote) {
+            $quot = '\'';
+        } else {
+            $quot = '"';
+        }
 
         foreach ($attributes as $attr) {
             $key = trim($attr['name']);
@@ -1233,15 +1239,15 @@ class Compiler
                 if ($this->terse) {
                     $items[] = $key;
                 } else {
-                    $items[] = "{$key}='{$key}'";
+                    $items[] = "{$key}=$quot{$key}$quot";
                 }
             } elseif ($value !== 'false' && $value !== 'null' && $value !== 'undefined') {
-                $items[] = "{$key}='{$value}'";
+                $items[] = "{$key}=$quot{$value}$quot";
             }
         }
 
         if (count($classes)) {
-            $items[] = 'class=\'' . implode(' ', $classes) . '\'';
+            $items[] = 'class=' . $quot . implode(' ', $classes) . $quot;
         }
 
         $this->buffer(implode(' ', $items), false);
